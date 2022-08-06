@@ -1,0 +1,61 @@
+﻿@using TestTask.Model
+@using TestTask.Shared.Modal
+
+<li class="draggable" draggable="true" title="@CurrentAssignment.Title" @ondragstart="() => HandleDragStart(CurrentAssignment)">
+    <p class="description">@CurrentAssignment.Title</p>
+    <p class="last-updated">@CurrentAssignment.Description</p>
+    <div class="btn-group btn-group-sm mt-2 mb-2" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-danger" @onclick="HandleDeleteAssignment"><i class="oi oi-trash"></i></button>
+        <button type="button" class="btn btn-warning" @onclick="ShowAddModal"><i class="oi oi-pencil"></i></button>
+    </div>
+    <p class="last-updated">@(CurrentAssignment.Deadline == null ? string.Empty : $"Дедлайн: {CurrentAssignment.Deadline?.ToString("MM.dd HH:mm")}")</p>
+
+</li>
+
+@code {
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [CascadingParameter]
+    AssignmentContainer Container { get; set; }
+
+    [Parameter]
+    public AssignmentModel CurrentAssignment { get; set; }
+
+    [Parameter]
+    public EventCallback<AssignmentModel> OnDeleteItem { get; set; }
+
+    public delegate void SampleDelegate(AssignmentModel assignmentModel);
+
+    private void HandleDragStart(Model.AssignmentModel assignment)
+    {
+        Container.CurrentAssignment = assignment;
+    }
+
+    private async Task HandleDeleteAssignment()
+    {
+        await OnDeleteItem.InvokeAsync(CurrentAssignment);
+    }
+
+    void ShowAddModal()
+    {
+        var parameters = new ModalParameters();
+        SampleDelegate AddTaskDel = new SampleDelegate(UpdateAssignment);
+
+        parameters.Add(nameof(UpdateAssignment), new EventCallback<AssignmentModel>(this, AddTaskDel));
+        parameters.Add(nameof(Assignment), CurrentAssignment);
+
+        var options = new ModalOptions()
+        {
+            Animation = ModalAnimation.FadeInOut(0.3)
+        };
+
+        Modal.Show<EditAssignmentModal>("Изменить задачу", parameters, options);
+    }
+
+
+    void UpdateAssignment(AssignmentModel task)
+    {
+        Container.OnStatusUpdated.InvokeAsync();
+    }
+}

@@ -1,0 +1,31 @@
+﻿@using TestTask.Model
+@using TestTask.Enums
+
+<div class="jobs-container">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter]
+    public List<AssignmentModel> Assignments { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<AssignmentModel> OnStatusUpdated { get; set; }
+
+    public Model.AssignmentModel CurrentAssignment { get; set; }
+
+    public async Task UpdateAssignmentAsync(AssignmentStatus status)
+    {
+        var task = Assignments.FirstOrDefault(_ => _.Id.Equals(CurrentAssignment.Id));
+        if (task != null)
+        {
+            task.Status = status;
+            await OnStatusUpdated.InvokeAsync(CurrentAssignment);
+        }
+    }
+}

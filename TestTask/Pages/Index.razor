@@ -1,0 +1,27 @@
+﻿@using TestTask.Shared.Home
+@using TestTask.Enums
+@using TestTask.Model
+
+@page "/"
+
+<AssignmentContainer Assignments="Assignments" OnStatusUpdated="HandleStatusUpdated">
+    <AssignmentList Status="@AssignmentStatus.ToDo"></AssignmentList>
+    <AssignmentList Status="@AssignmentStatus.InProgress"></AssignmentList>
+    <AssignmentList Status="@AssignmentStatus.Finished"></AssignmentList>
+</AssignmentContainer>
+
+@code{
+    static List<AssignmentModel> Assignments = new List<AssignmentModel>() 
+    { 
+        new AssignmentModel { Id = Guid.NewGuid(), Deadline = DateTime.Now, Title = "Задача", Status = AssignmentStatus.ToDo, Description = "сделать что-то важное" } 
+    };
+
+
+    void HandleStatusUpdated(AssignmentModel task)
+    {
+        if (task.Status == AssignmentStatus.Finished)
+        {
+            task.FinishDate = DateTime.Now;
+        }
+    }
+}
