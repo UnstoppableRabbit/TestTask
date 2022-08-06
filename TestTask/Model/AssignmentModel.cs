@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using TestTask.Enums;
 
 namespace TestTask.Model

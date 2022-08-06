@@ -1,17 +1,27 @@
-﻿@using TestTask.Model
-@using TestTask.Enums
-
-<div class="customModal">
-    <div class="form-group">
-        <label for="formGroupExampleInput1">Название</label>
-        <input type="text" class="form-control" @bind-value="Assignment.Title" id="formGroupExampleInput1" placeholder="Введите название">
+﻿<EditForm Model="@model">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="customModal">
+        <div class="form-group">
+            <label for="formGroupExampleInput1">Название</label>
+            <input type="text" class="form-control"  @bind-value="model.Title" id="formGroupExampleInput1" placeholder="Введите название">
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput2">Описание</label>
+            <textarea class="form-control" id="formGroupExampleInput2" @bind-value="model.Description" @bind-value:event="oninput" style="resize: none;" placeholder="Опишите задачу" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput3">Дедлайн</label>
+            <input class="form-control"
+                   id="formGroupExampleInput3"
+                   @bind-value="model.Deadline"
+                   @bind-value:event="oninput"
+                   @bind-value:format="yyyy-MM-ddTHH:mm"
+                   type="datetime-local" />
+        </div>
+        <button type="submit" class="btn btn-primary" @onclick="UpdateCurrentAssignment">Изменить</button>
     </div>
-    <div class="form-group">
-        <label for="formGroupExampleInput2">Описание</label>
-        <textarea class="form-control" id="formGroupExampleInput2" @bind-value="Assignment.Description" @bind-value:event="oninput" style="resize: none;" placeholder="Опишите задачу" rows="3"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary" @onclick="UpdateCurrentAssignment">Изменить</button>
-</div>
+</EditForm>
 
 @code {
     [Parameter]
@@ -23,8 +33,23 @@
     [Parameter]
     public AssignmentModel Assignment { get; set; }
 
+    ModalFormModel model = new ModalFormModel();
+
+    protected override void OnParametersSet()
+    {
+        model.Deadline = Assignment.Deadline == null ? DateTime.Now.AddDays(1) : (DateTime)Assignment.Deadline;
+        model.Description = Assignment.Description;
+        model.Title = Assignment.Title;
+    }
+
     public async Task UpdateCurrentAssignment()
     {
+        if (string.IsNullOrEmpty(model.Description) || string.IsNullOrEmpty(model.Title))
+            return;
+
+        Assignment.Title = model.Title;
+        Assignment.Description = model.Description;
+        Assignment.Deadline = model.Deadline;
         await UpdateAssignment.InvokeAsync(Assignment);
         await ModalInstance.CloseAsync();
     }

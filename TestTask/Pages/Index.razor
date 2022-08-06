@@ -1,8 +1,4 @@
-﻿@using TestTask.Shared.Home
-@using TestTask.Enums
-@using TestTask.Model
-
-@page "/"
+﻿@page "/"
 
 <AssignmentContainer Assignments="Assignments" OnStatusUpdated="HandleStatusUpdated">
     <AssignmentList Status="@AssignmentStatus.ToDo"></AssignmentList>

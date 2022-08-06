@@ -1,6 +1,4 @@
-﻿@using TestTask.Model
-@using TestTask.Shared.Modal
-
+﻿
 <li class="draggable" draggable="true" title="@CurrentAssignment.Title" @ondragstart="() => HandleDragStart(CurrentAssignment)">
     <p class="description">@CurrentAssignment.Title</p>
     <p class="last-updated">@CurrentAssignment.Description</p>
@@ -8,7 +6,7 @@
         <button type="button" class="btn btn-danger" @onclick="HandleDeleteAssignment"><i class="oi oi-trash"></i></button>
         <button type="button" class="btn btn-warning" @onclick="ShowAddModal"><i class="oi oi-pencil"></i></button>
     </div>
-    <p class="last-updated">@(CurrentAssignment.Deadline == null ? string.Empty : $"Дедлайн: {CurrentAssignment.Deadline?.ToString("MM.dd HH:mm")}")</p>
+    <p class="last-updated">@(CurrentAssignment.Deadline == null ? string.Empty : $"Дедлайн: {CurrentAssignment.Deadline?.ToString("dd.MM HH:mm")}")</p>
 
 </li>
 
